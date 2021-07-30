@@ -52,11 +52,8 @@ def print_long(text):
     print("")
 
 
-USING_SELF_HOSTED_GITHUB = confirm("Are you using self-hosted GitHub? [y/N]: ", default="no")
-if USING_SELF_HOSTED_GITHUB:
-    GITHUB_URL = input_url("Enter the URL of the self-hosted GitHub instance: ")
-else:
-    GITHUB_URL = "https://github.com"
+
+GITHUB_URL = "https://github.com"
 
 print_long(
     f"If your organization is at {GITHUB_URL}/my-organization, enter"
@@ -75,13 +72,11 @@ print_long(
 print("    ruby -rsecurerandom -e 'puts SecureRandom.hex(20)'")
 print_long(
     "Kindly keep them safe with you, as you shall be asked to enter the same"
-    " in the admin console."
+    " in the GitHub web interface."
 )
 
-WEBHOOK_SECRET = ask("Enter webhook secret for the main app: ")
-AUTOFIX_WEBHOOK_SECRET = ask("Etner webhook secret for Autofix App: ")
-
 NEW_APP_URL = f"{GITHUB_URL}/organizations/{ORGANIZATION_NAME}/settings/apps/new"
+
 MAIN_APP_DESCRIPTION = (
     "DeepSource helps you find and fix issues during code reviews.\n"
     "\n"
@@ -104,7 +99,6 @@ MAIN_APP_PARAMS = urlencode({
     "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/installation/",
     "setup_on_update": "false",
     "webhook_url": f"{DEEPSOURCE_INSTANCE_URI}/services/webhooks/github/",
-    "webhook_secret": WEBHOOK_SECRET,
     "events[]": ["member", "public", "push", "repository", "organization", "pull_request"],
     # Permissions
     "administration": "read",
@@ -118,7 +112,7 @@ MAIN_APP_PARAMS = urlencode({
     "single_file_name": ".deepsource.toml",
     "members": "read",
     "organization_hooks": "read",
-    "public": True,
+    "public": "true",
 }, True)
 
 AUTOFIX_APP_PARAMS = urlencode({
@@ -130,12 +124,11 @@ AUTOFIX_APP_PARAMS = urlencode({
     "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/autofix-installation/",
     "setup_on_update": "false",
     "webhook_url": f"{DEEPSOURCE_INSTANCE_URI}/services/webhooks/github/autofix-app/",
-    "webhook_secret": AUTOFIX_WEBHOOK_SECRET,
     # Permissions
     "contents": "write",
     "metadata": "write",
     "pull_requests": "write",
-    "public": True,
+    "public": "true",
 }, True)
 
 print_long(

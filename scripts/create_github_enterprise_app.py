@@ -90,7 +90,7 @@ MAIN_APP_PARAMS = urlencode({
     "url": DEEPSOURCE_INSTANCE_URI,
     "callback_url": f"{DEEPSOURCE_INSTANCE_URI}/accounts/github/login/callback/",
     "request_oauth_on_install": "false",
-    "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/installation/",
+    "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/ghe-installation/",
     "setup_on_update": "false",
     "webhook_url": f"{DEEPSOURCE_INSTANCE_URI}/services/webhooks/github-enterprise/",
     "events[]": ["member", "public", "push", "repository", "organization", "pull_request"],

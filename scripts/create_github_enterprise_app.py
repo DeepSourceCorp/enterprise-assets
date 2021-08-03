@@ -88,7 +88,7 @@ MAIN_APP_PARAMS = urlencode({
     "name": f"DeepSource {ORGANIZATION_NAME}",
     "description": MAIN_APP_DESCRIPTION,
     "url": DEEPSOURCE_INSTANCE_URI,
-    "callback_url": f"{DEEPSOURCE_INSTANCE_URI}/accounts/github/login/callback/",
+    "callback_url": f"{DEEPSOURCE_INSTANCE_URI}/accounts/github-enterprise/login/callback/",
     "request_oauth_on_install": "false",
     "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/installation/ghe/",
     "setup_on_update": "false",

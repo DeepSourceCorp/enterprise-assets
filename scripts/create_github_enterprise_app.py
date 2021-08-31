@@ -4,12 +4,13 @@ import webbrowser
 from textwrap import fill
 from urllib.parse import urlencode
 
+
 class Colors:
-    BOLD = '\033[1m'
-    CYAN = '\033[96m'
-    ENDC = '\033[0m'
-    GREEN = '\033[92m'
-    UNDERLINE = '\033[4m'
+    BOLD = "\033[1m"
+    CYAN = "\033[96m"
+    ENDC = "\033[0m"
+    GREEN = "\033[92m"
+    UNDERLINE = "\033[4m"
 
 
 def ask(prompt):
@@ -60,8 +61,7 @@ print_long(
 )
 ORGANIZATION_NAME = ask("Enter the organization slug on GitHub: ")
 DEEPSOURCE_INSTANCE_URI = input_url(
-    "Enter the URL of the DeepSource instance"
-    " (e.g., deepsource.example.com): "
+    "Enter the URL of the DeepSource instance" " (e.g., deepsource.example.com): "
 )
 
 print_long(
@@ -84,30 +84,40 @@ MAIN_APP_DESCRIPTION = (
     " â€”  https://deepsource.io/docs/"
 )
 
-MAIN_APP_PARAMS = urlencode({
-    "name": f"DeepSource {ORGANIZATION_NAME}",
-    "description": MAIN_APP_DESCRIPTION,
-    "url": DEEPSOURCE_INSTANCE_URI,
-    "callback_url": f"{DEEPSOURCE_INSTANCE_URI}/accounts/github-enterprise/login/callback/",
-    "request_oauth_on_install": "false",
-    "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/installation/ghe/",
-    "setup_on_update": "false",
-    "webhook_url": f"{DEEPSOURCE_INSTANCE_URI}/services/webhooks/github-enterprise/",
-    "events[]": ["member", "public", "push", "repository", "organization", "pull_request"],
-    # Permissions
-    "administration": "read",
-    "checks": "write",
-    "contents": "write",
-    "deployments": "read",
-    "metadata": "write",
-    "pull_requests": "write",
-    "repository_hooks": "read",
-    "single_file": "write",
-    "single_file_name": ".deepsource.toml",
-    "members": "read",
-    "organization_hooks": "read",
-    "public": True,
-}, True)
+MAIN_APP_PARAMS = urlencode(
+    {
+        "name": f"DeepSource {ORGANIZATION_NAME}",
+        "description": MAIN_APP_DESCRIPTION,
+        "url": DEEPSOURCE_INSTANCE_URI,
+        "callback_url": f"{DEEPSOURCE_INSTANCE_URI}/accounts/github-enterprise/login/callback/",
+        "request_oauth_on_install": "false",
+        "setup_url": f"{DEEPSOURCE_INSTANCE_URI}/installation/ghe/",
+        "setup_on_update": "false",
+        "webhook_url": f"{DEEPSOURCE_INSTANCE_URI}/services/webhooks/github-enterprise/",
+        "events[]": [
+            "member",
+            "public",
+            "push",
+            "repository",
+            "organization",
+            "pull_request",
+        ],
+        # Permissions
+        "administration": "read",
+        "checks": "write",
+        "contents": "write",
+        "deployments": "read",
+        "metadata": "write",
+        "pull_requests": "write",
+        "repository_hooks": "read",
+        "single_file": "write",
+        "single_file_name": ".deepsource.toml",
+        "members": "read",
+        "organization_hooks": "read",
+        "public": True,
+    },
+    True,
+)
 
 
 print_long(
@@ -116,12 +126,14 @@ print_long(
 )
 
 print(f"{Colors.UNDERLINE}GitHub App{Colors.ENDC}")
-print("""
+print(
+    """
  1. Scroll to the 'Webhook' section and check 'Active'.
  2. Scroll the the 'User Permissions' section and select 'Read-only'.
     for 'Email addresses' and 'Git SSH Keys'.
  3. Click 'Create GitHub App'.
-""")
+"""
+)
 
 
 if __name__ == "__main__":

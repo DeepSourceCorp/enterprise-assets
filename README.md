@@ -1,0 +1,3 @@
+# enterprise-assets [![DeepSource](https://deepsource.io/gh/deepsourcelabs/enterprise-assets.svg/?label=active+issues&show_trend=true&token=k5Pqh0Yikcm-PwZVaVfjS8CW)](https://deepsource.io/gh/deepsourcelabs/enterprise-assets/?ref=repository-badge) [![DeepSource](https://deepsource.io/gh/deepsourcelabs/enterprise-assets.svg/?label=resolved+issues&show_trend=true&token=k5Pqh0Yikcm-PwZVaVfjS8CW)](https://deepsource.io/gh/deepsourcelabs/enterprise-assets/?ref=repository-badge)
+
+Helper scripts for [DeepSource's Enterprise installation](https://deepsource.io/docs/on-premise/intro).

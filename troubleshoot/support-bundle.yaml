@@ -1,0 +1,357 @@
+apiVersion: troubleshoot.sh/v1beta2
+kind: SupportBundle
+metadata:
+  name: DeepSource Support Bundle
+spec:
+  collectors:
+    - copy:
+        selector:
+          - app=asgard
+        containerPath: /secrets/.env
+        containerName: asgard-main
+    - copy:
+        selector:
+          - app=atlas
+        containerPath: /config/config.toml
+        comtainerName: atlas
+    - copy:
+        selector:
+          - app=atlas
+        containerPath: /vault/secrets/secrets.toml
+        containerName: atlas
+    - copy:
+        selector:
+          - app=atlas
+        containerPath: /vault/secrets/rmq
+        containerName: atlas
+    - copy:
+        selector:
+          - app=janus
+        containerPath: /config/config.toml
+        containerName: janus
+    - copy:
+        selector:
+          - app=janus
+        containerPath: /vault/secrets/secrets.toml
+        containerName: janus
+    - copy:
+        selector:
+          - app=janus
+        containerPath: /vault/secrets/rmq
+        containerName: janus
+    - copy:
+        selector:
+          - app.kubernetes.io/component=pgpool
+        containerPath: /opt/bitnami/pgpool/user_config/pgpool.conf
+        containerName: pgpool
+    - copy:
+        selector:
+          - app.kubernetes.io/component=pgpool
+        containerPath: /docker-entrypoint-initdb.d/secret/my_init_script.sh
+        containerName: pgpool
+    - copy:
+        selector:
+          - app=rabbitmq-ha
+        containerPath: /etc/definitions/definitions.json
+        containerName: pgpool
+    - logs:
+        selector:
+          - appType=asgard-main
+        name: asgard-main-logs
+        containerNames:
+          - asgard-main
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - appType=asgard-celery-servecelery
+        name: asgard-celery-servecelery-logs
+        containerNames:
+          - asgard-celery-servecelery
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - appType=asgard-celery-serveanalysis
+        name: asgard-celery-serveanalysis-logs
+        containerNames:
+          - asgard-celery-serveanalysis
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=atlas
+        name: atlas-logs
+        containerNames:
+          - atlas
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=atlas
+        name: atlas-logs
+        containerNames:
+          - atlas
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=janus
+        name: janus-logs
+        containerNames:
+          - janus
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=mater
+        name: mater-logs
+        containerNames:
+          - mater
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/name=cert-manager
+        name: cert-manager-logs
+        containerNames:
+          - cert-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/name=cainjector
+        name: cert-manager-cainjector-logs
+        containerNames:
+          - cert-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/name=webhook
+        name: cert-manager-webhook-logs
+        containerNames:
+          - cert-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=minio
+        name: minio-logs
+        containerNames:
+          - minio
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/instance=ingress-nginx
+        name: ingress-nginx-logs
+        containerNames:
+          - controller
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/component=pgpool
+        name: pgpool-logs
+        containerNames:
+          - pgpool
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/instance=pgbouncer
+        name: pgbouncer-logs
+        containerNames:
+          - pgbouncer
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/component=postgresql
+        name: postgresql-logs
+        containerNames:
+          - postgresql
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/instance=rabbitmq
+        name: rabbitmq-logs
+        containerNames:
+          - rabbitmq
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=redis-ha
+        name: redis-logs
+        containerNames:
+          - redis
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - role=analysis
+        name: analysis-logs
+        namespace: atlas-jobs
+        containerNames:
+          - marvin
+          - coat
+        limits:
+          maxAge: 168h
+    - collectd:
+        collectorName: "collectd"
+        image: busybox:1
+        hostPath: "/var/lib/collectd/rrd"
+        imagePullPolicy: IfNotPresent
+  analyzers:
+    - clusterVersion:
+        outcomes:
+          - fail:
+              when: "< 1.15.0"
+              message: The application requires Kubernetes 1.15.0 or later, and recommends 1.16.0.
+              uri: https://www.kubernetes.io
+          - warn:
+              when: "< 1.16.0"
+              message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.16.0 or later.
+              uri: https://kubernetes.io
+          - pass:
+              message: Your cluster meets the recommended and required versions of Kubernetes.
+    - containerRuntime:
+        outcomes:
+          - pass:
+              when: "== docker"
+              message: Docker runtime was found.
+          - pass:
+              when: "== containerd"
+              message: Containerd runtime was found.
+          - fail:
+              message: Did not find any container runtime.
+    - distribution:
+        checkName: Check Kubernetes distribution.
+        outcomes:
+          - fail:
+              when: "== docker-desktop"
+              message: The application does not support Docker Desktop Clusters
+          - fail:
+              when: "== microk8s"
+              message: The application does not support Microk8s Clusters
+          - fail:
+              when: "== minikube"
+              message: The application does not support Minikube Clusters
+          - pass:
+              when: "== eks"
+              message: EKS is a supported distribution
+          - pass:
+              when: "== gke"
+              message: GKE is a supported distribution
+          - pass:
+              when: "== aks"
+              message: AKS is a supported distribution
+          # Will be supported in the future
+          - pass:
+              when: "== kurl"
+              message: KURL is a supported distribution
+          - pass:
+              when: "== digitalocean"
+              message: DigitalOcean is a supported distribution
+          - warn:
+              message: Unable to determine the distribution of Kubernetes
+    - nodeResources:
+        checkName: CPU cores per node in the application workload node pool is 16 or greater
+        filters:
+          selector:
+            matchLabels:
+              repl{{ ConfigOption `node_selector_rain` }}
+        outcomes:
+          - fail:
+              when: "min(cpuCapacity) < 16"
+              message: There should be atleast 16 cores per node in the node pool
+          - pass:
+              message: There are at least 16 cores per node in the node pool
+    - nodeResources:
+        checkName: Memory per node in the application workload node pool is 32GB or greater
+        filters:
+          selector:
+            matchLabels:
+              repl{{ ConfigOption `node_selector_atlas` }}
+        outcomes:
+          - fail:
+              when: "min(memoryCapacity) < 32119000Ki"
+              message: There should be atleast 32GB memory per node in the node pool
+          - pass:
+              message: There is alteast 32GB memory per node in the node pool
+    - nodeResources:
+        checkName: CPU cores per node in the analysis workload node pool is 10 or greater
+        filters:
+          selector:
+            matchLabels:
+              repl{{ ConfigOption `node_selector_atlas` }}
+        outcomes:
+          - fail:
+              when: "min(cpuCapacity) < 10"
+              message: There should be atleast 10 CPU cores per node in the node pool
+          - pass:
+              message: There are at least 10 cores per node in the node pool
+    - nodeResources:
+        checkName: Memory per node in the analysis workload node pool is 32GB or greater
+        filters:
+          selector:
+            matchLabels:
+              repl{{ ConfigOption `node_selector_atlas` }}
+        outcomes:
+          - fail:
+              when: "min(memoryCapacity) < 32119000Ki"
+              message: There should be atleast 32GB memory per node in the node pool
+          - pass:
+              message: There is alteast 32GB memory per node in the node pool
+    - storageClass:
+        checkName: Check for default storage class
+        outcomes:
+          - fail:
+              message: No default storage class found
+          - pass:
+              message: Default storage class found
+    - customResourceDefinition:
+        customResourceDefinitionName: certificaterequests.cert-manager.io
+        outcomes:
+          - fail:
+              message: The certificaterequests CRD was not found in the cluster.
+          - pass:
+              message: certificaterequests is installed and available.
+    - customResourceDefinition:
+        customResourceDefinitionName: certificates.cert-manager.io
+        outcomes:
+          - fail:
+              message: The certificates CRD was not found in the cluster.
+          - pass:
+              message: certificates is installed and available.
+    - customResourceDefinition:
+        customResourceDefinitionName: clusterissuers.cert-manager.io
+        outcomes:
+          - fail:
+              message: The clusterissuers CRD was not found in the cluster.
+          - pass:
+              message: certificates is installed and available.
+    - customResourceDefinition:
+        customResourceDefinitionName: issuers.cert-manager.io
+        outcomes:
+          - fail:
+              message: The issuers CRD was not found in the cluster.
+          - pass:
+              message: issuers is installed and available.
+    - customResourceDefinition:
+        customResourceDefinitionName: challenges.acme.cert-manager.io
+        outcomes:
+          - fail:
+              message: The challenges CRD was not found in the cluster.
+          - pass:
+              message: challenges is installed and available.
+    - customResourceDefinition:
+        customResourceDefinitionName: orders.acme.cert-manager.io
+        outcomes:
+          - fail:
+              message: The orders CRD was not found in the cluster.
+          - pass:
+              message: orders is installed and available.

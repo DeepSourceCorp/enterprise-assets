@@ -1,0 +1,75 @@
+kubernetes.io/ingress.class: "<your-ingress-class>"
+nginx.ingress.kubernetes.io/ssl-redirect: "true"
+kubernetes.io/tls-acme: "true"
+cert-manager.io/cluster-issuer: "<your-cluster-issuer>" // Ignore if cert-manager isn't used in your cluster
+nginx.ingress.kubernetes.io/service-upstream: "true"
+nginx.ingress.kubernetes.io/client-body-buffer-size: "1M"
+nginx.ingress.kubernetes.io/proxy-connect-timeout: "75"
+nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+nginx.ingress.kubernetes.io/use-regex: "true"
+nginx.ingress.kubernetes.io/configuration-snippet: |
+  if ($cookie_bifrost = 1) {
+    proxy_pass http://bifrost;
+  }
+  if ($arg_state = "Ymlmcm9zdA==") {
+    proxy_pass http://bifrost;
+  }
+nginx.ingress.kubernetes.io/server-snippet: |
+  add_header X-Frame-Options "SAMEORIGIN";
+  proxy_set_header X-Forwarded-Proto https;
+  proxy_set_header Connection "";
+  server_tokens off;
+  proxy_intercept_errors on;
+  location = /graphql/cli/ {
+    client_max_body_size 5M;
+    client_body_buffer_size 5M;
+    proxy_pass http://asgard-main:8000;
+  }
+  location = /graphql/ {
+    proxy_pass http://asgard-main:8000;
+  }
+  location = /dtc/ {
+    proxy_pass http://asgard-main:8000;
+  }
+  location @debug {
+    proxy_pass http://mater;
+  }
+  location = / {
+    rewrite / /login permanent;
+  }
+  location = /healthz {
+    return 200;
+  }
+  location ~ ^/api {
+    proxy_pass http://asgard-main:8000;
+  }
+  location ~ ^/(bb|gh|gl|gsr)/(.*)/(.*).svg {
+    proxy_pass http://asgard-main:8000;
+  }
+  location ~ ^/directory {
+    proxy_pass http://bifrost;
+  }
+  location ~ ^/groups {
+    proxy_pass http://bifrost;
+  }
+  location ~ ^/services {
+    client_body_buffer_size 5M;
+    error_page 500 502 503 504 @debug;
+    proxy_pass http://asgard-main:8000;
+  }
+  location ~ ^/discover {
+    proxy_pass http://bifrost;
+  }
+  location ~ ^/support {
+    proxy_pass http://bifrost;
+  }
+  location ~ ^/sockets {
+    proxy_pass http://janus;
+  }
+  location ~ ^/(prod-asgard-static|asgard-artifacts) {
+    proxy_pass http://minio:9000;
+  }
+  location ~ ^/saml2 {
+    proxy_pass http://asgard-main:8000;
+  }

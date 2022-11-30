@@ -74,7 +74,11 @@ SLACK_APP_MANIFEST = dedent(
       socket_mode_enabled: false
       token_rotation_enabled: false
   """
-)
+).strip()
 
-print(f"{Colors.UNDERLINE}\nSlack App Manifest{Colors.ENDC}")
+print(
+    f"{Colors.CYAN}\nPlease copy the following manifest and use it to create the Slack app {Colors.ENDC}"
+)
+print("-" * 75)
 print(SLACK_APP_MANIFEST)
+print("-" * 75)

@@ -1,3 +1,4 @@
+import sys
 from textwrap import dedent, fill
 
 
@@ -44,7 +45,7 @@ DEEPSOURCE_INSTANCE_URI = input_url(
 )
 if not DEEPSOURCE_INSTANCE_URI:
     print(f"{Colors.RED}Please provide the DeepSource instance URL!{Colors.ENDC}")
-    exit(1)
+    sys.exit(1)
 
 SLACK_APP_MANIFEST = dedent(
     f"""

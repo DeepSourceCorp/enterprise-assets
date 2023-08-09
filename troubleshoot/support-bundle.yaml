@@ -51,9 +51,28 @@ spec:
         containerName: pgpool
     - copy:
         selector:
+          - app.kubernetes.io/instance=pgbouncer
+        containerPath: /etc/pgbouncer/pgbouncer.ini
+        containerName: pgbouncer
+    - copy:
+        selector:
           - app=rabbitmq-ha
         containerPath: /etc/definitions/definitions.json
         containerName: pgpool
+    - exec:
+        name: pgpool-show-nodes
+        selector:
+          - app.kubernetes.io/component=pgpool
+        command: ["sh"]
+        args: ["-c", "PGPASSWORD=supersecretpassword psql -h localhost -p 5432 -U asgard -c 'show pool_nodes'"]
+    - logs:
+        selector:
+          - appType=asgard-migrate
+        name: asgard-migrate-logs
+        containerNames:
+          - asgard-migrate
+        limits:
+          maxAge: 168h
     - logs:
         selector:
           - appType=asgard-main
@@ -76,6 +95,22 @@ spec:
         name: asgard-celery-serveanalysis-logs
         containerNames:
           - asgard-celery-serveanalysis
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - appType=asgard-api
+        name: asgard-api-logs
+        containerNames:
+          - asgard-api
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app.kubernetes.io/name=bifrost
+        name: bifrost-logs
+        containerNames:
+          - bifrost
         limits:
           maxAge: 168h
     - logs:
@@ -198,6 +233,211 @@ spec:
         containerNames:
           - marvin
           - coat
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=kotsadm
+        name: kotsadm-logs
+        containerNames:
+          - kotsadm
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=kotsadm-postgres
+        name: kotsadm-postgres-logs
+        containerNames:
+          - kotsadm-postgres
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=kurl-proxy-kotsadm
+        name: kurl-proxy-kotsadm-logs
+        containerNames:
+          - proxy
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=cert-manager
+        name: cert-manager-logs
+        namespace: cert-manager
+        containerNames:
+          - cert-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=cainjector
+        name: cert-manager-cainjector-logs
+        namespace: cert-manager
+        containerNames:
+          - cert-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=webhook
+        name: cert-manager-webhook-logs
+        namespace: cert-manager
+        containerNames:
+          - cert-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - k8s-app=kube-dns
+        name: coredns-logs
+        namespace: kube-system
+        containerNames:
+          - coredns
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - component=etcd
+        name: etcd-logs
+        namespace: kube-system
+        containerNames:
+          - etcd
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - component=kube-apiserver
+        name: kube-apiserver-logs
+        namespace: kube-system
+        containerNames:
+          - kube-apiserver
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - component=kube-controller-manager
+        name: kube-controller-manager-logs
+        namespace: kube-system
+        containerNames:
+          - kube-controller-manager
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - k8s-app=kube-proxy
+        name: kube-proxy-manager-logs
+        namespace: kube-system
+        containerNames:
+          - kube-proxy
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - component=kube-scheduler
+        name: kube-scheduler-logs
+        namespace: kube-system
+        containerNames:
+          - kube-scheduler
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - k8s-app=metrics-server
+        name: metrics-server-logs
+        namespace: kube-system
+        containerNames:
+          - metrics-server
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - name=weave-net
+        name: weave-net-logs
+        namespace: kube-system
+        containerNames:
+          - weave-npc
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=ekc-operator
+        name: ekc-operator-logs
+        namespace: kurl
+        containerNames:
+          - ekc-operator
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=registry
+        name: registry-logs
+        namespace: kurl
+        containerNames:
+          - registry
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-ceph-agent
+        name: rook-ceph-agent-logs
+        namespace: rook-ceph
+        containerNames:
+          - rook-ceph-agent
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-ceph-mgr
+        name: rook-ceph-mgr-logs
+        namespace: rook-ceph
+        containerNames:
+          - mgr
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-ceph-mon
+        name: rook-ceph-mon-logs
+        namespace: rook-ceph
+        containerNames:
+          - mon
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-ceph-operator
+        name: rook-ceph-operator-logs
+        namespace: rook-ceph
+        containerNames:
+          - rook-ceph-operator
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-ceph-osd
+        name: rook-ceph-osd-logs
+        namespace: rook-ceph
+        containerNames:
+          - osd
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-ceph-rgw
+        name: rook-ceph-rgw-logs
+        namespace: rook-ceph
+        containerNames:
+          - rgw
+        limits:
+          maxAge: 168h
+    - logs:
+        selector:
+          - app=rook-discover
+        name: rook-ceph-discover-logs
+        namespace: rook-ceph
+        containerNames:
+          - discover
+          - rook-discover
         limits:
           maxAge: 168h
     - collectd:

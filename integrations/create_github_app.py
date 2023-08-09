@@ -98,6 +98,7 @@ GH_APP_PARAMS = {
     "single_file_name": ".deepsource.toml",
     "members": "read",
     "organization_hooks": "read",
+    "emails": "read",
     "public": True,
 }
 
